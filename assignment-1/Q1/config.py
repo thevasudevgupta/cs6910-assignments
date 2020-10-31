@@ -4,11 +4,11 @@ from dataclasses import dataclass, replace
 class Config:
 
     batch_size: int = 32
-    epochs: int = 80
+    epochs: int = 48
 
-    lr: float = 3e-3
+    lr: float = 5e-3
     momentum: float = 0.9
-    weight_decay: float = 8e-4
+    weight_decay: float = 1e-3
     random_flip_prob: float = None
 
     tr_root: str = "data/train/"

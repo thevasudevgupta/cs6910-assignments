@@ -16,10 +16,10 @@ class Trainer(object):
 
         self.model.to(self.device)
 
-        # self.optimizer = torch.optim.SGD(self.model.parameters(), lr=args.lr, 
-        #                                 momentum=args.momentum, weight_decay=args.weight_decay)
+        self.optimizer = torch.optim.SGD(self.model.parameters(), lr=args.lr, 
+                                        momentum=args.momentum, weight_decay=args.weight_decay)
 
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+        # self.optimizer = torch.optim.Adam(self.model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
         self.criterion = torch.nn.CrossEntropyLoss()
 
@@ -30,8 +30,6 @@ class Trainer(object):
     def fit(self, tr_data, val_data, test_data):
 
         self.model_summary(self.model)
-
-        # wandb.init(project=self.args.project, name=self.args.name, config=self.args.__dict__, save_code=True)
 
         try:
             tr_metric, val_metric = self.train(tr_data, val_data)

@@ -15,6 +15,7 @@ import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as T
 
+import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import wandb
@@ -97,7 +98,6 @@ class Analyser(object):
         steps = 0
         predictions = []
         labels = []
-        self.model.zero_filter_(filter_idx, layer_no)
 
         pbar = tqdm(data, total=len(data), desc=f"Running 2.2.2 for layer-{layer_no} filter-{filter_idx}", leave=False)
         for batch in pbar:
@@ -112,8 +112,9 @@ class Analyser(object):
             predictions.extend(pred.tolist())
             labels.extend(label.tolist())
 
-        return running_zero_filter_acc/steps, predictions, labels
+        return running_zero_filter_acc/steps, torch.tensor(predictions), torch.tensor(labels)
 
+    @torch.no_grad()
     def filter_modification(self, data, layer_no, filter_idx1, filter_idx2,  wandb_name="filter_modification", wandb_project="CS6910-assignment1"):
 
         data = torch.utils.data.DataLoader(data,
@@ -122,13 +123,24 @@ class Analyser(object):
                                         pin_memory=True,
                                         num_workers=4)
 
+        _, fake_labels, labels = self.evaluate(data, None, None) 
+        comp = (fake_labels == labels)
+
         for idx in (filter_idx1, filter_idx2):
             wandb.init(name=f"{wandb_name}_layer{layer_no}_filter{idx}", project=wandb_project)
             self.model.load_state_dict(torch.load("final_modeling.pt", map_location=self.device))
             self.model.to(self.device)
+            self.model.zero_filter_(idx, layer_no)
             acc, preds, labels = self.evaluate(data, idx, layer_no)
             wandb.log({"accuracy": acc})
-            wandb.sklearn.plot_confusion_matrix(labels, preds, [i for i in range(33)])
+
+            new_comp = (preds != labels)
+            indices = (new_comp*comp).tolist()
+
+            mis_classified_labels = labels[indices]
+            freq = pd.Series(mis_classified_labels.tolist()).value_counts()
+
+            print(f"mis_classified_labels_layer{layer_no}_filter{idx}", freq)
 
     @torch.no_grad()
     def validation_step(self, inputs, label):
@@ -143,8 +155,10 @@ class Analyser(object):
 
 if __name__ == "__main__":
 
+    from net import Net
+
     # just change the layer no - [1,2,3,4,5]
-    layer_no = 3
+    layer_no = 1
     filter_idx1 = 16
     filter_idx2 = 32
 
@@ -153,6 +167,7 @@ if __name__ == "__main__":
     model = Net()
     analyser = Analyser(model)
 
+    # filter-identification
     l_indices, a_indices = analyser.filter_identification(dataset, layer_no, filter_idx1, filter_idx2)
     print(l_indices, a_indices)
 
