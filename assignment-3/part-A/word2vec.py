@@ -27,7 +27,7 @@ if __name__ == "__main__":
     with open("../data/text8.txt", "r") as f:
         corpus = f.read().split(" ")
 
-    context = prepare_data(corpus[:3300], window_size=args.window_size)
+    context = prepare_data(corpus, window_size=args.window_size)
 
     dl = DataLoader(args.batch_size)
     context = dl.setup(context)
