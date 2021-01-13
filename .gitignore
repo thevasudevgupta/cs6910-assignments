@@ -1,4 +1,6 @@
 *.DS_Store
 *data/
+*__pycache__/
+*weights/
 *.vector_cache/
 *.word_vectors_cache/

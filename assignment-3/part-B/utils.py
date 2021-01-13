@@ -7,6 +7,8 @@ from tqdm import tqdm
 class Classifier(nn.Module):
 
     def __init__(self, vocab_size, embedding_size=256, num_lstm_layers=2, dropout=0.1, embedding_path=None):
+        super().__init__()
+        vocab_size += 2 # handling unknown & pad tokens
         self.embedding = nn.Embedding(vocab_size, embedding_size)
         if embedding_path:
             embed = torch.load(embedding_path)
@@ -17,7 +19,6 @@ class Classifier(nn.Module):
     def forward(self, input_ids):
         x = self.embedding(input_ids)
         x, _ = self.lstm(x)
-        print(x.shape)
         x = x[:, -1, :]
         return self.linear(x)
 
@@ -26,6 +27,7 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--embedding_size", type=int, default=300)
     parser.add_argument("--embedding_path", type=str, default=None)
+    parser.add_argument("--max_length", type=int, default=-1)
     parser.add_argument("--vocab_path", type=str, default="../data/vocab.txt")
     parser.add_argument("--num_lstm_layers", type=int, default=2)
     parser.add_argument("--dropout", type=float, default=0.1)

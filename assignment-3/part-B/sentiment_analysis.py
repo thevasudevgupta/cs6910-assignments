@@ -16,7 +16,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     wandb.init(config=args, project="CS6910-assignment3", name=args.wandb_run_name)
 
-    dl = DataLoader(args.batch_size, args.vocab_path)
+    dl = DataLoader(args.batch_size, args.max_length, args.vocab_path)
     tr_data, val_data, test_data = dl.setup()
     tr_data = dl.train_dataloader(tr_data)
     val_data = dl.val_dataloader(val_data)

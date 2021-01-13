@@ -90,7 +90,7 @@ class Trainer(object):
                       "epoch": e}, commit = False)
 
             if self.save_path:
-                torch.save(self.model.state_dict(), f"epoch_wts/epoch-{e}.pt")
+                torch.save(self.model.state_dict(), f"{self.save_path}-epochs/epoch-{e}.pt")
 
         return tr_metric, val_metric
 
@@ -114,6 +114,7 @@ class Trainer(object):
         labels = batch["sentiment"].to(self.device)
 
         out = self.model(inputs)
+
         loss = self.criterion(out, labels)
         loss = loss.mean()
 
