@@ -1,7 +1,9 @@
+
 import torch
 import wandb
 from tqdm import tqdm
 import numpy as np
+
 
 class Trainer(object):
 
@@ -88,9 +90,7 @@ class Trainer(object):
                       "epoch": e}, commit = False)
 
             if self.save_path:
-                save_status = self.assert_epoch_saving(val_metric, mode="max")
-                if save_status:
-                    torch.save(self.model.state_dict(), f"epoch_wts/epoch-{e}.pt")
+                torch.save(self.model.state_dict(), f"epoch_wts/epoch-{e}.pt")
 
         return tr_metric, val_metric
 
@@ -123,7 +123,7 @@ class Trainer(object):
         for p in self.model.parameters():
             p.grad = None
 
-        _, pred = torch.max(out.detach(), 1)
+        _, pred = out.detach().max(1)
 
         batch_acc = ((pred == labels).type(torch.float)).mean()
 
@@ -139,7 +139,7 @@ class Trainer(object):
         loss = self.criterion(out, labels)
         loss = loss.mean()
 
-        _, pred = torch.max(out.detach(), 1)
+        _, pred = out.detach().max(1)
         batch_acc = ((pred == labels).type(torch.float)).mean()
 
         return loss, batch_acc.item()
@@ -160,31 +160,3 @@ class Trainer(object):
                         )
             results += res
         print(results)
-
-    @staticmethod
-    def assert_epoch_saving(val_metric: list, n: int = 3, mode: str = "min"):
-        """
-        Allows saving if loss decreases / accuracy increases
-        n = 'min' corresponds to val_metric being loss-metric
-        n = 'max' corresponds to val_metric being accuracy-metric
-
-        Note:
-            val_metric should be having current value of loss/accuracy
-        """
-        status = False
-        if len(val_metric) < n+1:
-            return True
-
-        current_val = val_metric[-1]
-        compr = val_metric[-n-2:-2]
-        if mode == "min":
-            compr = np.min(compr)
-            if current_val < compr:
-                status = True
-        elif mode == "max":
-            compr = np.max(compr)
-            if current_val > compr:
-                status = True
-        else:
-            raise ValueError("mode can be only either max or min")
-        return status

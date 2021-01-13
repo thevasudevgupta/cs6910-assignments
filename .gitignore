@@ -1,3 +1,4 @@
 *.DS_Store
+*data/
 *.vector_cache/
 *.word_vectors_cache/
