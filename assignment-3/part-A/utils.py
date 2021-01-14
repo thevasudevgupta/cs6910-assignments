@@ -38,3 +38,22 @@ def prepare_data(corpus, window_size=4):
                 context.append((corpus[j], word))
     print("Total num of samples : {}".format(len(context)))
     return context
+
+
+def get_cosine_similarity(word1, word2, model:nn.Module, weights_path:str, vocab_path="../data/vocab.txt"):
+
+    with open(vocab_path, "r") as f:
+        vocab = f.read().split("\n")
+    word_to_index = {w: idx for (idx, w) in enumerate(vocab)}
+    index_to_word = {idx: w for (idx, w) in enumerate(vocab)}
+
+    device = torch.device("cpu") if not torch.cuda.is_available() else torch.device("cuda")
+
+    wts = torch.load(weights_path, map_location=torch.device("cpu"))
+    model.load_state_dict(wts)
+
+    e1 = model.embed(torch.tensor(word_to_index[word1])).view(1, -1).to(device)
+    e2 = model.embed(torch.tensor(word_to_index[word2])).view(1, -1).to(device)
+    cs = torch.nn.CosineSimilarity(-1).to(device)
+
+    return cs(e1, e2).item()

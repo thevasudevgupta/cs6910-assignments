@@ -39,6 +39,8 @@ print(len(cleaned_words), 'words AFTER cleaning stop words and punctuations')
 
 # 'cleaned_words' and 'unique_words' to create a word2vec model
 
+######################################################################################################################
+
 # BELOW STEPS ARE IMPLEMENTED BY ME
 # This will help us reduce vocab_size to fit into gpu-memory
 

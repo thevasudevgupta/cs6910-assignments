@@ -23,7 +23,7 @@ class ClassificationDataset(torch.utils.data.Dataset):
 
 class DataLoader(object):
 
-    def __init__(self, batch_size, max_length, vocab_path):
+    def __init__(self, batch_size, max_length=-1, vocab_path="../data/vocab.txt"):
         """
         This class is preparing data for feeding into torch-model
         """
@@ -42,11 +42,17 @@ class DataLoader(object):
         self.index_to_word[self.vocab_size] = "<UNK>"
         self.index_to_word[self.vocab_size+1] = "<PAD>"
 
-    def setup(self):
+    def setup(self, return_only_test_data=False):
+
+        if return_only_test_data:
+            test_data = ClassificationDataset("../data/test.csv", self.word_to_index)
+            return test_data
+
         tr_data = ClassificationDataset("../data/train.csv", self.word_to_index)
         val_data = ClassificationDataset("../data/val.csv", self.word_to_index)
         test_data = ClassificationDataset("../data/test.csv", self.word_to_index)
         print("datasets lengths : ", len(tr_data), len(val_data), len(test_data))
+
         return tr_data, val_data, test_data
 
     def train_dataloader(self, train_data):

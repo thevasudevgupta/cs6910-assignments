@@ -1,3 +1,12 @@
+# __author__ = "Vasudev Gupta"
+"""
+    This is the main the script that will enable training ...
+
+    USAGE:
+        python word2vec.py [--options]
+        
+        `training_id` option will allow you to switch among `bag of words` or `skip gram` or `lstm based model`
+"""
 
 import argparse
 from dataclasses import dataclass
@@ -8,15 +17,15 @@ from trainer import Trainer
 from utils import Word2Vec, prepare_data
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--embedding_size", type=int, default=300)
-parser.add_argument("--batch_size", type=int, default=2000)
-parser.add_argument("--lr", type=float, default=1.e-3)
+parser.add_argument("--embedding_size", type=int, default=200)
+parser.add_argument("--batch_size", type=int, default=1600)
+parser.add_argument("--lr", type=float, default=5.e-3)
 parser.add_argument("--weight_decay", type=float, default=0.0)
-parser.add_argument("--epochs", type=int, default=3)
-parser.add_argument("--save_path", type=str, default="wts.pt")
+parser.add_argument("--epochs", type=int, default=30)
+parser.add_argument("--save_path", type=str, default="wts")
 parser.add_argument("--wandb_run_name", type=str, default=None)
-parser.add_argument("--window_size", type=int, default=4)
-parser.add_argument("--training_id", type=str, default="cbow", help='either of "cbow" or "skip_gram" or "lstm_based"')
+parser.add_argument("--window_size", type=int, default=2)
+parser.add_argument("--training_id", type=str, default="skip_gram", help='either of "cbow" or "skip_gram" or "lstm_based"')
 
 
 if __name__ == "__main__":

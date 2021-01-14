@@ -21,6 +21,20 @@ class Classifier(nn.Module):
         x, _ = self.lstm(x)
         x = x[:, -1, :]
         return self.linear(x)
+    
+    @torch.no_grad()
+    def predict(self, dataset, device=torch.device("cpu")):
+        preds = []
+        labels = []
+
+        for batch in tqdm(dataset, desc="predicting .. "):
+            inputs = batch["text"].to(device)
+            out = self(inputs)
+            _, pred = out.max(1)
+            preds.extend(pred.cpu().tolist())
+            labels.extend(batch["sentiment"].tolist())
+
+        return preds, labels
 
 
 def get_parser():

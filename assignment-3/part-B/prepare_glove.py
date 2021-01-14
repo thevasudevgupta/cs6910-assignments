@@ -1,3 +1,12 @@
+# __author__ = "Vasudev Gupta"
+"""
+    This will prepare glove embedding for you ...
+    You need to mannually download glove embedding from their official website into `data` directory ...
+    ... and then run this script to save them into `.pt` format which will make it easier to use later with torch
+
+    USAGE:
+        change variables as per your need and run `python prepare_glove.py`
+"""
 
 import torch
 from tqdm import tqdm

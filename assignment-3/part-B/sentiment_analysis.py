@@ -1,3 +1,10 @@
+# __name__ = "Vasudev Gupta"
+"""
+    This is main script to start training model for classification task into 5 categories
+
+    USAGE:
+        `python sentiment_analysis.py [--options]`
+"""
 
 import torch.nn as nn
 import torch
