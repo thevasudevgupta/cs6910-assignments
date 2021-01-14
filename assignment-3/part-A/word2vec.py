@@ -36,15 +36,23 @@ if __name__ == "__main__":
     with open("../data/text8.txt", "r") as f:
         corpus = f.read().split(" ")
 
-    context = prepare_data(corpus, window_size=args.window_size)
+    skip_gram = False
+    cbow = False
+    lstm_based = False
+    if args.training_id == "skip_gram":
+        skip_gram = True
+    elif args.training_id == "cbow":
+        cbow = True
+    elif args.training_id=="lstm_based":
+        lstm_based = True
 
-    dl = DataLoader(args.batch_size)
+    context = prepare_data(corpus, window_size=args.window_size, skip_gram=skip_gram)
+
+    dl = DataLoader(args.batch_size, vocab_path="../data/vocab.txt", skip_gram=skip_gram)
     context = dl.setup(context)
     context = dl.train_dataloader(context)
 
-    model = Word2Vec(args.embedding_size, dl.vocab_size, lstm_based=False)
-    if args.training_id=="lstm_based":
-        model = Word2Vec(args.embedding_size, dl.vocab_size, lstm_based=True)
+    model = Word2Vec(args.embedding_size, dl.vocab_size, lstm_based=lstm_based, cbow=cbow)
 
     trainer = Trainer(model, args)
     trainer.fit(context)

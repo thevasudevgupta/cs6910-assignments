@@ -37,8 +37,8 @@ class Trainer(object):
                 }
             torch.save(state_dict, f"{self.save_path}.tar")
 
-        print("saving model")
         if self.save_path:
+            print("saving model")
             state_dict = {
                     "model": self.model.state_dict(),
                     "optimizer": self.optimizer.state_dict()
@@ -83,13 +83,11 @@ class Trainer(object):
         inputs, labels = batch
         inputs, labels = inputs.to(self.device), labels.to(self.device)
 
-        if self.training_id == "cbow":
-            out = self.model(inputs)
-        elif self.training_id == "lstm_based":
-            out = self.model(inputs, target=labels)
-        elif self.training_id == "skip_gram":
-            out = self.model(labels)
-            labels = inputs
+        target = None
+        if self.training_id == "lstm_based":
+            target = labels            
+
+        out = self.model(inputs, target=target)
         
         loss = self.criterion(out, labels)
         loss = loss.mean()
