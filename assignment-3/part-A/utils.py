@@ -59,7 +59,7 @@ def prepare_data(corpus, window_size=4, skip_gram=True):
     return context
 
 
-def get_cosine_similarity(word1, word2, model:nn.Module, weights_path:str, vocab_path="../data/vocab.txt"):
+def get_cosine_similarity(word1, word2, embedding_matrix_path, vocab_path="../data/vocab.txt"):
 
     with open(vocab_path, "r") as f:
         vocab = f.read().split("\n")
@@ -68,11 +68,10 @@ def get_cosine_similarity(word1, word2, model:nn.Module, weights_path:str, vocab
 
     device = torch.device("cpu") if not torch.cuda.is_available() else torch.device("cuda")
 
-    wts = torch.load(weights_path, map_location=torch.device("cpu"))
-    model.load_state_dict(wts)
+    embed_matrix = torch.load(embedding_matrix_path, map_location=torch.device("cpu"))
 
-    e1 = model.embed(torch.tensor(word_to_index[word1])).view(1, -1).to(device)
-    e2 = model.embed(torch.tensor(word_to_index[word2])).view(1, -1).to(device)
+    e1 = embed_matrix[torch.tensor(word_to_index[word1])].view(1, -1).to(device)
+    e2 = embed_matrix[torch.tensor(word_to_index[word2])].view(1, -1).to(device)
     cs = torch.nn.CosineSimilarity(-1).to(device)
 
     return cs(e1, e2).item()
